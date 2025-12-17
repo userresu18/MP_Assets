@@ -18,9 +18,7 @@ foreach(int i; int p; pcf) {
     if(find(ppts, p)<0) append(pcf_filtered, p);
 }
 
-//i[]@pcf = pcf_filtered;
-//i[]@ppts = ppts;
-
+// go through the edges
 int npts[];
 foreach(int i; int p; ppts) {
     vector C = point(0, "P", p);
@@ -43,6 +41,7 @@ foreach(int i; int p; ppts) {
         }
     }
     
+    // append them in the right order
     int ordering[] = argsort(dists);
     ons = reorder(ons, ordering);
     
@@ -52,4 +51,3 @@ foreach(int i; int p; ppts) {
 
 addprim(0, "poly", npts);
 removeprim(0, @primnum, 0);
-//i[]@npts = npts;
