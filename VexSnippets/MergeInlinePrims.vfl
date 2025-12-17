@@ -1,0 +1,55 @@
+// Primitive wrangle
+
+int ppts[] = primpoints(0, @primnum);
+
+// find prim radius
+float r = 0;
+foreach(int i; int p; ppts) {
+    float l = length(point(0, "P", p) - @P);
+    r = max(l, r);
+}
+
+// find points in radius
+int pcf[] = pcfind(0, "P", @P, r + 0.01, 100);
+
+// filter out prim points
+int pcf_filtered[];
+foreach(int i; int p; pcf) {
+    if(find(ppts, p)<0) append(pcf_filtered, p);
+}
+
+//i[]@pcf = pcf_filtered;
+//i[]@ppts = ppts;
+
+int npts[];
+foreach(int i; int p; ppts) {
+    vector C = point(0, "P", p);
+    int next_index = (i + 1) % len(ppts);
+    vector N = point(0, "P", ppts[next_index]);
+    
+    int ons[];
+    float dists[];
+    
+    //find points on line
+    foreach(int pf; pcf_filtered) {
+        vector P = point(0, "P", pf);
+        vector CP = normalize(P - C);
+        vector NP = normalize(P - N);
+        float dot = dot(CP, NP);
+        if(dot < -0.99) {
+            append(ons, pf);
+            float distance = length(P - C);
+            append(dists, distance);
+        }
+    }
+    
+    int ordering[] = argsort(dists);
+    ons = reorder(ons, ordering);
+    
+    append(npts, p);
+    append(npts, ons);  
+}
+
+addprim(0, "poly", npts);
+removeprim(0, @primnum, 0);
+//i[]@npts = npts;
