@@ -1,4 +1,27 @@
-// Primitive wrangle
+int pointOnSegment(vector start; vector end; vector point)
+{
+    float eps = 10e-4;
+    
+    vector seg = end - start;
+    vector v   = point - start;
+
+    float seg_len2 = dot(seg, seg); //length(seg) * length(seg)
+    if (seg_len2 <= 0.0)
+        return 0; // degenerate segment
+
+    // position along segment
+    float t = dot(v, seg) / seg_len2;
+
+    // check if inside
+    if (t < 0.0 || t > 1.0)
+        return 0;
+
+    // Distance from point to line
+    vector closest = start + t * seg;
+    float dist = distance(point, closest);
+
+    return dist <= eps;
+}
 
 int ppts[] = primpoints(0, @primnum);
 
@@ -18,7 +41,9 @@ foreach(int i; int p; pcf) {
     if(find(ppts, p)<0) append(pcf_filtered, p);
 }
 
-// go through the edges
+// i[]@pcf = pcf_filtered;
+// i[]@ppts = ppts;
+
 int npts[];
 foreach(int i; int p; ppts) {
     vector C = point(0, "P", p);
@@ -31,23 +56,23 @@ foreach(int i; int p; ppts) {
     //find points on line
     foreach(int pf; pcf_filtered) {
         vector P = point(0, "P", pf);
-        vector CP = normalize(P - C);
-        vector NP = normalize(P - N);
-        float dot = dot(CP, NP);
-        if(dot < -0.99) {
+        
+        if(pointOnSegment(C, N, P)) {
             append(ons, pf);
             float distance = length(P - C);
             append(dists, distance);
         }
     }
     
-    // append them in the right order
     int ordering[] = argsort(dists);
     ons = reorder(ons, ordering);
     
     append(npts, p);
-    append(npts, ons);  
+    append(npts, ons);
+    
+    //printf("start: %d, end: %d, mid: %d", p, ppts[next_index], ons);
 }
 
+ 
 addprim(0, "poly", npts);
 removeprim(0, @primnum, 0);
