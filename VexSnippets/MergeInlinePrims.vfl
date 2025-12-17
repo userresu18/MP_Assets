@@ -1,3 +1,5 @@
+// Primitive wrangle snippet
+
 int pointOnSegment(vector start; vector end; vector point)
 {
     float eps = 10e-4;
