@@ -1,0 +1,41 @@
+float angleBetween(vector Previous; vector Current; vector Next) {
+    vector back = normalize(Previous - Current);
+    vector forward = normalize(Next - Current);
+
+    float angle = degrees(acos(dot(back,forward)));
+    if(cross(back, forward).y < 0) angle = 360 - angle;
+    
+    return angle;
+}
+
+if(neighbourcount(0,@ptnum) == 2) {
+    int pprims[] = pointprims(0, @ptnum);
+    if(len(pprims) == 1) {
+        // we need to check the order of the neighbours
+        int ppts[] = primpoints(0, pprims[0]);
+        int index = find(ppts, @ptnum);
+        int next_index = (index +1)%len(ppts);
+        int prev_index = (index -1)%len(ppts);
+        
+        //i@n = ppts[next_index];
+        //i@p = ppts[prev_index];
+        
+        vector Prev = point(0, "P", ppts[prev_index]);
+        vector Next = point(0, "P", ppts[next_index]);
+        
+        f@angle = angleBetween(Prev, @P, Next);
+    } else if(len(pprims) == 2) {
+        // its probably a polyline we are ouputting the smallest angle 
+        int nbs[] = neighbours(0,@ptnum);
+        vector Prev = point(0, 'P', nbs[0]);
+        vector Next = point(0, 'P', nbs[1]);
+        
+        float angle = angleBetween(Prev, @P, Next);
+        if(angle>180) angle = 360 - angle;
+        f@angle = angle;
+    } else {
+        f@angle = -1;
+    }
+} else {
+    f@angle = -1;
+}
